@@ -84,6 +84,9 @@ $app->routeMiddleware([
     'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
     'role'       => Spatie\Permission\Middlewares\RoleMiddleware::class,
 ]);
+$app->middleware([
+    App\Http\Middleware\CorsMiddleware::class
+ ]);
 
 /*
 |--------------------------------------------------------------------------
