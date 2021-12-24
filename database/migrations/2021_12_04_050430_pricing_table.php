@@ -15,10 +15,24 @@ class PricingTable extends Migration
     {
         Schema::create('prices', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('country');
-            $table->string('postalcode');
-            $table->boolean('is_remote_area');
-            $table->decimal('price', 20);
+            $table->decimal('kg', 20);
+            $table->decimal('zone_1', 20);
+            $table->decimal('zone_2', 20);
+            $table->decimal('zone_3', 20);
+            $table->decimal('zone_4', 20);
+            $table->decimal('zone_5', 20);
+            $table->decimal('zone_6', 20);
+            $table->decimal('zone_7', 20);
+            $table->decimal('zone_8', 20);
+            $table->decimal('dimensi', 20);
+            $table->timestamps();
+        });
+
+        Schema::create('zones', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('zone_id');
+            $table->string('country_name');
+            $table->string('country_code');
             $table->timestamps();
         });
     }
@@ -31,5 +45,6 @@ class PricingTable extends Migration
     public function down()
     {
         Schema::dropIfExists('prices');
+        Schema::dropIfExists('zones');
     }
 }

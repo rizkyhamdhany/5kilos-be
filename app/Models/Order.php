@@ -102,4 +102,9 @@ class Order extends Model
         $data->deskripsi_barang = $deskripsi_barang;
         return $data->save() ? $data : false;
     }
+
+    public function boxes()
+    {
+        return $this->hasMany(OrderBox::class, "order_id", "id");
+    }
 }

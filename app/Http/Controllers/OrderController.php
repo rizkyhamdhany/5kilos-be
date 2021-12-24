@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderBox;
+use App\Models\OrderBoxItem;
+use Faker\Provider\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +28,7 @@ class OrderController extends Controller
         }
         $order = Order::create(
             $user_id,
-            '12345678',
+            Uuid::uuid(),
             $request->origin_nama,
             $request->origin_perusahaan,
             $request->origin_country,
@@ -57,6 +60,13 @@ class OrderController extends Controller
         if (!$order) {
             return response()->json(['message' => trans('failed create order')], 400);
         }
+        foreach($request->boxes as $box) {
+            $order_box = OrderBox::create($order->id, $box['p'], $box['l'], $box['t']);
+            foreach($box["items"] as $item) {
+                OrderBoxItem::create($order_box->id, $item['berat'], $item['desc'], $item['nilai']);
+            }
+        }
+        $order = Order::where('id', $order->id)->with('boxes', 'boxes.items')->first();
         return response()->json(['data' => $order, 'message' => trans('order created')]);
     }
 

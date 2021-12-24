@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Price;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 
 class PriceController extends Controller
@@ -18,13 +19,22 @@ class PriceController extends Controller
     }
 
     public function get(Request $request) {
-        $price = Price::where([
-            ['country', '=', $request->country],
-            ['postalcode', '=', $request->postalcode]
-        ])->first();
+        $zone = Zone::where('country_code', $request->country_code)->first();
+        $weight = ceil($request->weight);
+        if ($request->p && $request->l && $request->t) {
+            $dimens = $request->p * $request->l * $request->t;
+            if ($dimens / 5000 > $weight) {
+                $weight = ceil($dimens / 5000);
+            }
+        }  
+        $zone_id = 'zone_'.$zone->zone_id;
+        $price = Price::select($zone_id)->where([
+            ['kg', '>=', $weight]
+        ])->orderBy('kg')->first();
         if (!$price) {
             return response()->json(['message' => trans('price not found!')], 404);
         }
-        return response()->json(['data' => $price]);
+        $total_price = $price[$zone_id] * $weight;
+        return response()->json(['data' => ['price' => $total_price]]);
     }
 }
